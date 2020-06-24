@@ -1,0 +1,139 @@
+<html>
+<head>
+<title>ColorTabs</title>
+<script>
+var lvl;
+var siz;
+var scor=0;
+var sr;
+var bol=false;
+var pozicii = new Array();
+
+function genpos(h){
+	
+var k = new Array();
+for(var jj=0;jj<(siz)*(siz);jj++){
+	k[jj] = jj+1;
+}
+var r;
+var t=siz*siz;
+
+for(var p=0;p<(siz*siz);p++)
+{
+	r = Math.floor(Math.random()*t);
+    h[p] = k[r];
+    for(var c =r;c<t;c++)
+    {
+    	k[c]=k[c+1];
+    }
+    t--;
+}
+}
+
+
+
+
+var cvetove = new Array(); //za cvetove
+function gencvqt(l)
+{
+	
+	for(var i=0;i<(siz*siz/2*3);i++)
+	{
+		l[i] = Math.floor(Math.random()*256);
+	}
+}
+
+
+
+function beg(){
+lvl = document.getElementById("dul").value;
+siz = lvl*2;
+var BIG = document.getElementById("BIG");
+var inputcode = "<table>";
+var n = 1;
+var ac;
+var bc;
+var cc;
+gencvqt(cvetove);
+genpos(pozicii);
+
+for(var i=1;i<=siz;i++)
+{
+	inputcode = inputcode + '<tr>';
+	for(var j=1;j<=siz;j++)
+	{
+		inputcode = inputcode + '<td onclick="iztr(' + pozicii[n-1] + ')" id="' + pozicii[n-1] + '"></td>';
+		n++;
+	}
+	inputcode = inputcode + '</tr>';
+}
+inputcode += '</table>';
+BIG.innerHTML = inputcode;
+
+	
+	for(var ll=1;ll<(siz*siz/2+1);ll++)
+	{
+		document.getElementById(ll*2).style = "border: 3px groove black; background-color: rgb("+cvetove[(ll-1)*3]+","+cvetove[(ll-1)*3+1]+","+cvetove[(ll-1)*3+2]+")";
+		document.getElementById(ll*2-1).style = "border: 3px groove black; background-color: rgb("+cvetove[(ll-1)*3]+","+cvetove[(ll-1)*3+1]+","+cvetove[(ll-1)*3+2]+")";
+	}
+	
+}
+
+
+
+
+function iztr(n){
+	if(bol == false){
+		document.getElementById(n).style.border = "3px groove white";
+		sr = n;
+		bol = true;
+	}
+	else{
+		if(((sr%2)==0&&sr==(n+1))||((sr%2)!=0&&sr==(n-1))){
+			document.getElementById(n).style.opacity = "0";
+			document.getElementById(sr).style.opacity = "0";
+			scor++;
+			if(scor == (siz*siz/2)){
+			fin();
+			}
+		}
+		else{
+			document.getElementById(sr).style.border = "3px groove black";
+		}
+		bol = false;
+	}
+	
+	
+}
+
+function fin()
+{
+	document.getElementById("BIG").innerHTML = 'YOU WIN<br><img src="https://thumbs.gfycat.com/OccasionalImpossibleGalapagosmockingbird-max-1mb.gif"/>';
+}
+
+</script>
+<style>
+td{
+
+	height: 50px; width: 50px;
+	
+}
+td:hover { 
+    outline-color: white;
+	outline-style: groove;
+	
+}
+</style>
+</head>
+<body>
+<center>
+
+<div id="BIG"  style="height: 100%; width: 100%; background-color: lightblue">
+Lvl:<input id="dul" type="number" value="2"><br>
+<button onclick="beg()">START</button>
+</div>
+
+
+</center>
+</body>
+</html>

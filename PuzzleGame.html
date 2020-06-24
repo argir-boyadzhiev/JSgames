@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#e0,#e1, #e2, #e3, #e4, #e5, #e6, #e7, #e8, #e9, #e10, #e11, #e12, #e13, #e14 ,#e15 ,#e16 ,#e17 ,#e17 ,#e18 ,#e19 ,#e20 ,#e21 ,#e22 ,#e23 ,#e24 {
+	width: 100px;
+	height: 100px;
+	background-color: orange;
+	position: absolute;
+	font-size: 70px;
+	background-size: 600px;
+	background-position: -30 -30;
+}
+#base{
+	clear: none;
+	float: center;
+	position: relative;
+	height: 500px;
+	width: 500px;
+	background-color: rgb(200, 90, 0);
+	border: solid 10px brown;
+}
+body{
+	background-color: rgb(255, 128, 0);
+}
+#izb{
+	float: left;
+	background-color: rgb(200, 90, 0);
+	width: 200px;
+	font-size: 14px;
+	border: brown solid 5px;
+	padding: 5px;
+	margin: 50px;
+}
+#tip{
+	height: 200px;
+	width: 200px;
+	background-color: rgb(200, 90, 0);
+	border: brown 5px solid;
+}
+#tipbox{
+	position: relative;
+	margin: 50px;
+	float: right;
+	height: 250px;
+	width: 250px;
+}
+</style>
+<title>Puzzle</title>
+</head>
+<body>
+<div id="izb">
+<span style="font-size: 20px">Mode:</span><br>
+<button onclick="chimg('https://images.pexe'+'ls.com/photos/20787/pexels-photo.jpg?cs=srgb&dl=adorable-animal-cat-20787.jpg&fm=jpg',-120,0,800)">Cat</button><br>
+<button onclick="chimg('https://paintings.pinots'+'palette.com/sunset-moon-tv.jpg?v=10026637',0,0,630)">Sunset</button><br>
+<button onclick="chimg('https://i.redd.it/ivtc934'+'8ne501.jpg',-400,0,900)">Dark Douls</button><br>
+<button onclick="chimg('https://thumbs.gfycat.com/Disastr'+'ousPointlessAlaskanmalamute-size_restricted.gif',-380,-80,1200)">Rave(hardcore)</button><br>
+<br>
+<br>
+<button onclick="chimgcustom()">Custom</button><br>
+<abbr title="Link of the image you want to see in the puzzle.">Link: <input style="width: 160px" id="i0" type="text"></abbr><br>
+<abbr title="The coordinates of the upper left pixel from which the image will be projected in the puzzle.">Beginning point:<input style="width: 40px;" id="i1" type="number">,<input style="width: 40px;" id="i2" type="number"></abbr><br>
+<abbr title="Its usually around 500. The bigger it gets the less part of the image will fit in the puzzle.">Zoom:<input style="width: 60px;" id="i3" type="number"></abbr>
+</div>
+<div id="tipbox">
+<center>
+<div id="tip"></div><br>
+<button id="tipbut" onclick="tip()">Show Tip</button>
+</center>
+</div>
+<center>
+<div  id="base">
+<div onclick="cellswap(0)" id="e0"></div>
+<div onclick="cellswap(1)" id="e1"></div>
+<div onclick="cellswap(2)" id="e2"></div>
+<div onclick="cellswap(3)" id="e3"></div>
+<div onclick="cellswap(4)" id="e4"></div>
+<div onclick="cellswap(5)" id="e5"></div>
+<div onclick="cellswap(6)" id="e6"></div>
+<div onclick="cellswap(7)" id="e7"></div>
+<div onclick="cellswap(8)" id="e8"></div>
+<div onclick="cellswap(9)" id="e9"></div>
+<div onclick="cellswap(10)" id="e10"></div>
+<div onclick="cellswap(11)" id="e11"></div>
+<div onclick="cellswap(12)" id="e12"></div>
+<div onclick="cellswap(13)" id="e13"></div>
+<div onclick="cellswap(14)" id="e14"></div>
+<div onclick="cellswap(15)" id="e15"></div>
+<div onclick="cellswap(16)" id="e16"></div>
+<div onclick="cellswap(17)" id="e17"></div>
+<div onclick="cellswap(18)" id="e18"></div>
+<div onclick="cellswap(19)" id="e19"></div>
+<div onclick="cellswap(20)" id="e20"></div>
+<div onclick="cellswap(21)" id="e21"></div>
+<div onclick="cellswap(22)" id="e22"></div>
+<div onclick="cellswap(23)" id="e23"></div>
+<div onclick="cellswap(24)" id="e24"></div>
+</div>
+<br>
+<div style="font-size: 40px; font-weight: 700; color: red;" id="win2"></div><div id="win" style="font-size: 40px; font-weight: 700; color: red;"></div>
+<button id="bud" onclick="setup()">START</button>
+</center>
+</body>
+</html>
+<script>
+var moves = 0;
+var secint;
+var shallcon = true;
+function zasichane(){
+	secundi=0;
+	secint = setInterval(addsec,1000);
+function addsec(){
+if(shallcon){secundi++;
+document.getElementById("win").innerHTML = secundi + " sec";
+}
+else{clearINterval(secint);
+shallcon = true;
+}
+}
+}
+var iliq = 0;
+for(var y=0;y<5;y++){
+for(var x=0;x<5;x++){
+	var edno= -30 - x*100;
+	var dve= -30 - y*100;
+	document.getElementById("e"+iliq).style.backgroundPosition = edno + 'px ' + dve + 'px';
+	document.getElementById("e"+iliq).style.top = y*100 + 'px';
+	document.getElementById("e"+iliq).style.left = x*100 + 'px';
+	iliq++;
+}}
+var il0 = "https://cdn.nekos.lif" + "e/neko/neko_270.jpg";
+var itx0 = -30;
+var ity0 = -30;
+var iw0 = 600;
+
+function chimgcustom(){
+	var edno = document.getElementById("i0").value;
+	var dve = document.getElementById("i1").value;
+	var tri = document.getElementById("i2").value;
+	var chetri = document.getElementById("i3").value;
+	chimg(edno,dve,tri,chetri);
+}
+function chimg(il,itx,ity,iw){
+il0 = il;
+itx0 = itx;
+ity0 = ity;
+iw0 = iw;
+	var i = 0;
+	for(var y=0;y<5;y++){
+	for(var x=0;x<5;x++){
+		document.getElementById("e"+i).style.backgroundImage = 'url("' + il + '")';
+		var edno= itx - x*100;
+		var dve=ity - y*100;
+		document.getElementById("e"+i).style.backgroundPosition = edno + 'px ' + dve + 'px';
+		document.getElementById("e"+i).style.backgroundSize = iw + 'px ';
+		i++;
+	}}
+	document.getElementById("tipbut").innerHTML="Show Tip";
+	document.getElementById("tip").style.backgroundImage = 'url("https://www.babybeddi' + 'ng.com/images/fabric/solid-orange-minky-fabric_large.jpg")';
+	tipoff = true;
+	}
+var tipoff = true;
+function tip()
+{	
+	if(tipoff){
+	document.getElementById("tipbut").innerHTML="Hide Tip";
+	document.getElementById("tip").style.backgroundPosition = itx0/2.4 + "px " + ity0/2.4 + "px";
+	document.getElementById("tip").style.backgroundSize = iw0/2.4 + "px ";
+	document.getElementById("tip").style.backgroundImage = 'url("' + il0 + '")';
+	tipoff = false;
+	}
+	else{
+	document.getElementById("tipbut").innerHTML="Show Tip";
+	document.getElementById("tip").style.backgroundImage = 'url("https://www.babybedding.com/ima' + 'ges/fabric/solid-orange-minky-fabric_large.jpg")';
+	tipoff = true;
+	}
+}
+function genpos(h){
+var k = new Array();
+for(var jj=0;jj<24;jj++){
+	k[jj]=jj;
+}
+var r;
+var t=24;
+for(var p=0;p<24;p++){
+	r = Math.floor(Math.random()*t);
+	h[p] = k[r];
+	for(var c=r;c<t;c++)
+	{
+			k[c]=k[c+1];
+	}
+	t--;
+	}
+	//proverka dali moje da se reshi
+var solv = 0;
+for(var i=0;i<23;i++){
+for(var j=i+1;j<24;j++){
+	if(h[i]>h[j]) solv++;
+}}
+if(solv%2==1){
+	var hash = h[22];
+	h[22] = h[23];
+	h[23] = hash;	
+}
+}
+var positions = new Array();
+var cells = new Array();
+var currentposition = 24;
+function setup(){
+moves = 0;
+clearInterval(secint);
+shallcon = true;
+zasichane();
+predpazitel = true;
+document.getElementById("bud").innerHTML = "RESET";
+genpos(positions);
+positions[24] = 24;
+var uf = 0;
+for(var i=0;i<24;i++){
+}
+for(var y=0;y<5;y++)
+{
+	for(var x=0;x<5;x++)
+	{
+		if(!(x==4&&y==4)){
+		var dom = document.getElementById("e" + positions[uf]);
+		dom.style.top = y * 100  + 'px';
+		dom.style.left = x * 100 + 'px';
+		cells[positions[uf]] = {h:x, v:y, d:dom};
+		uf++;
+		}else{
+			var dom = document.getElementById("e24");
+		dom.style.top = '400px';
+		dom.style.left = '400px';
+		cells[24] = {h:4, v:4, d:dom};
+		}
+	}
+}
+for(var i=0;i<25;i++)
+	{
+		document.getElementById("e"+i).style.border = "solid 1px black";
+		document.getElementById("e"+i).style.height = "99px";
+		document.getElementById("e"+i).style.width = "99px";
+	}
+	document.getElementById("e24").style.opacity = "0";
+	document.getElementById("win").innerHTML = " ";
+}
+var predpazitel = true;
+function cellswap(newposition){
+var ch = cells[currentposition].h;
+var cv = cells[currentposition].v;
+var nh = cells[newposition].h;
+var nv = cells[newposition].v;
+if(predpazitel){
+	if(nv == cv)
+	{
+		if(nh == (ch - 1)){
+			moveleft(newposition,currentposition,nh,ch);
+			moves++;
+			document.getElementById("win2").innerHTML = "Moves: " + moves;
+			}
+		if(nh == (ch + 1)){
+			moveright(newposition,currentposition,nh,ch);
+			moves++;
+			document.getElementById("win2").innerHTML = "Moves: " + moves;
+			}
+	}
+	if(nh == ch)
+	{
+		if(nv == (cv - 1)){
+			moveup(newposition,currentposition,nv,cv);
+			moves++;
+			document.getElementById("win2").innerHTML = "Moves: " + moves;
+			}
+		if(nv == (cv + 1)){
+			movedown(newposition,currentposition,nv,cv);
+			moves++;
+			document.getElementById("win2").innerHTML = "Moves: " + moves;
+			}
+	}
+}
+}
+function moveleft(n,c,nh,ch){
+predpazitel = false;
+var nt = nh*100;
+var inter = setInterval(stepleft,10);
+function stepleft(){
+	if(nt == ch*100){
+		cells[c].d.style.left = (nh * 100) + "px";
+		cells[c].h = nh;
+		cells[n].h = ch;
+		clearInterval(inter);
+		predpazitel = true;
+		willwin()
+	}
+	else{
+		nt += 4;
+		cells[n].d.style.left = nt + "px";
+	}
+}}
+function moveright(n,c,nh,ch){
+predpazitel = false;
+var nt = nh*100;
+var inter = setInterval(stepright,10);
+function stepright(){
+	if(nt == ch*100){
+		cells[c].d.style.left = (nh * 100) + "px";
+		cells[c].h = nh;
+		cells[n].h = ch;
+		clearInterval(inter);
+		predpazitel = true;
+		willwin()
+	}
+	else{
+		nt -= 4;
+		cells[n].d.style.left = nt + "px";
+	}
+}}
+function moveup(n,c,nv,cv){
+predpazitel = false;
+var nt = nv*100;
+var inter = setInterval(stepup,10);
+function stepup(){
+	if(nt == cv*100){
+		cells[c].d.style.top = (nv * 100) + "px";
+		cells[c].v = nv;
+		cells[n].v = cv;
+		clearInterval(inter);
+		predpazitel = true;
+		willwin()
+	}
+	else{
+		nt += 4;
+		cells[n].d.style.top = nt + "px";
+	}
+}}
+function movedown(n,c,nv,cv){
+predpazitel = false;
+var nt = nv*100;
+var inter = setInterval(stepdown,10);
+function stepdown(){
+	if(nt == cv*100){
+		cells[c].d.style.top = (nv * 100) + "px";
+		cells[c].v = nv;
+		cells[n].v = cv;
+		clearInterval(inter);
+		predpazitel = true;
+		willwin()
+	}
+	else{
+		nt -= 4;
+		cells[n].d.style.top = nt + "px";
+	}
+}}
+function willwin(){
+	var balls = true;
+	var gnar = 0;
+	for(var y = 0;y<5;y++){
+		for(var x=0;x<5;x++){
+			if(cells[gnar].v != y || cells[gnar].h != x) balls = false;
+			gnar++;
+		}
+	}
+	if(balls) fin();
+}
+function fin(){
+	shallcon = false;
+	for(var i=0;i<25;i++)
+	{
+		document.getElementById("e"+i).style.border = "0px";
+		document.getElementById("e"+i).style.height = "100px";
+		document.getElementById("e"+i).style.width = "100px";
+	}
+	document.getElementById("e24").style.opacity = "1";
+	document.getElementById("win").innerHTML = "♥ CONGRATULATIONS!!! ♥ <br> Moves:" + moves + "<br>Time: " + secundi + " sec";
+	document.getElementById("win2").innerHTML = " ";
+	predpazitel = false;
+}
+
+</script>

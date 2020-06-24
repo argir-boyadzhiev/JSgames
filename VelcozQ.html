@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vel'koz Q</title>
+	<style type="text/css">
+		body{
+			background-color: #9e5e00;
+		}
+		#opciibox{
+			font-size: 20px;
+			float: left;
+			border: 1px solid black;
+			background-color: #ffbf00;
+			padding: 3px;
+		}
+		#timebox{
+			text-align: center;
+			width: 200px;
+			font-size: 30px;
+			position: relative;
+			float: right;
+			border: 1px solid black;
+			background-color: #ffbf00;
+			padding: 10px;
+			top: 100px;
+			right: 100px;
+		}
+		#gamebox{
+			border: 1px solid black;
+			background-color: #98af00;
+		}
+		.totheright{
+			text-align: right;
+		}
+		.inpbox{
+			width: 60px;
+		}
+		#but{
+			width: 60px;
+		}
+	</style>
+</head>
+<body>
+<div id="opciibox">
+	<center style="font-size: 23px; font-weight: 700;">Опции:</center>
+	<table>
+	<tr><td class="totheright">Скорост Qтата:</td><td><input class="inpbox" id="i0" value="6" type="number"></td></tr>
+	<tr><td class="totheright">Брой Qтата:</td><td><input class="inpbox" id="i1" value="7" type="number"></td></tr>
+	<tr><td class="totheright">Големина:</td><td><input class="inpbox" id="i3" value="20" type="number"></td></tr>
+	<tr><td class="totheright">Скорост на героя:</td><td><input class="inpbox" id="i4" value="5" type="number"></td></tr>
+	<tr><td class="totheright">Големина на героя:</td><td><input class="inpbox" id="i5" value="20" type="number"></td></tr>
+	<tr><td></td><td class="totheright"><button onclick="start()" id="but">Старт</button></td></tr>
+	</table>
+	P - пауза<br>
+	R - рестарт
+</div>
+<div id="timebox">
+	Време: 0 сек.
+</div>
+<center><canvas width="400" height="600" id="gamebox"></canvas></center>
+</body>
+</html>
+<script type="text/javascript">
+	var can = document.getElementById("gamebox");
+	var ctx = can.getContext("2d");
+	var dod = new Array();
+	var playing = false;
+	window.addEventListener("keydown", function (e) {
+        switch(e.keyCode){
+		    case 37: player.xs = -plsp; dod[1]=true;  break; 
+		    case 39: player.xs = plsp; dod[3]=true; break;
+		    case 38:  player.ys = -plsp; dod[2]=true; break;
+		    case 40: player.ys = plsp; dod[4]=true; break;
+	    }
+	  if(e.keyCode==80&&playing) pause();
+	  else if(e.keyCode==80&&!playing){ contin();}
+	  if(e.keyCode==82) restart();
+    });
+    window.addEventListener("keyup", function (e) {
+	 dod[e.keyCode-36] = false;
+    });
+    var plsp = 6;
+    var plr = 20;
+	var player = {
+		x:200,
+		y:450,
+		xs:plsp,
+		ys:plsp,
+		r:plr,
+		reset: function(){
+			this.x = 200;
+			this.y = 450;
+			this.xs = plsp;
+			this.ys = plsp;
+			this.r = plr;
+		},
+		update: function(){
+			if(this.x>this.r&&this.xs<0)this.x += this.xs;
+			if(this.x<400-this.r&&this.xs>0)this.x += this.xs;
+			if(this.y>this.r&&this.ys<0)this.y += this.ys;
+			if(this.y<600-this.r&&this.ys>0)this.y += this.ys;
+			drawplayer(this.x,this.y,this.r);
+		}
+	}
+	var count=0;
+	var interval;
+	var tim;
+	var secs=0;
+	var speed = 6;
+	var velnachbroy = 5;
+	var chestota = 10;
+	var golemina = 20;
+	var velbroy = 0;
+	var veltop = 0;
+	var velQta = new Array();
+	var vel = {
+		add: function(all,x,y,s,r,or,ate){
+			var bones = {
+				x: x,
+				y: y,
+				s: s,
+				r: r,
+				or: or,
+				ate: ate
+			}
+			all[veltop] = bones;
+			veltop++;
+			velbroy++;
+		},
+		del: function(all,j){
+			for (var i=j;i<veltop-1;i++) {
+				all[i].x = all[i+1].x;
+				all[i].y = all[i+1].y;
+				all[i].s = all[i+1].s;
+				all[i].r = all[i+1].r;
+				all[i].or = all[i+1].or;
+				all[i].ate = all[i+1].ate;
+			}
+			veltop--;
+			velbroy--;
+		},
+		hit: function(all){
+			for (var i=0;i<veltop;i++) {
+				var hit = true;
+				var k = 0.8;
+				if((all[i].x - all[i].r*k) > (player.x + player.r*k)) hit = false;
+				if((all[i].x + all[i].r*k) < (player.x - player.r*k)) hit = false;
+				if((all[i].y - all[i].r*k) > (player.y + player.r*k)) hit = false;
+				if((all[i].y + all[i].r*k) < (player.y - player.r*k)) hit = false;
+				if(hit) { 
+				meme();
+				pause();
+				}
+			}
+		},
+		drawvel: function()
+		{
+			for (var i = 0; i < velbroy; i++) {
+				drawQ(velQta[i].x,velQta[i].y,velQta[i].r,velQta[i].or,velQta[i].ate);
+			}
+		},
+		update: function(){
+			for(var i=0;i<velbroy;i++){
+				if(velQta[i].or==0) velQta[i].y += velQta[i].s;
+				if(velQta[i].or==1) velQta[i].x -= velQta[i].s;
+				if(velQta[i].or==2) velQta[i].x += velQta[i].s;
+				if(velQta[i].ate>0) velQta[i].ate++;
+				if(velQta[i].ate==25) {velQta[i].ate==0; vel.explosion(velQta,i); }
+			}
+		},
+		repos: function(all,i){
+			all[i].x = Math.round(Math.random()*350)+25;
+			all[i].y = Math.round(Math.random()*400)-450;
+			all[i].ate = 0;
+		},
+		exitbox: function(){
+			for(var i=0;i<velbroy;i++){
+				if(velQta[i].y>700) vel.repos(velQta,i);
+				if(velQta[i].x>500||velQta[i].x<-100) vel.del(velQta,i);
+			}
+		},
+		resetall: function(all,br){
+			for(var i=0;i<br;i++){
+				vel.repos(all,i);
+			}
+			veltop = br;
+			velbroy = velnachbroy;
+		},
+		explosion: function(all,i){
+			vel.add(velQta,velQta[i].x,velQta[i].y,velQta[i].s,velQta[i].r,1,0);
+			vel.add(velQta,velQta[i].x,velQta[i].y,velQta[i].s,velQta[i].r,2,0);
+			vel.repos(velQta,i);
+		}
+	}
+	function start(){
+		veltop = 0;
+		speed = document.getElementById("i0").value*1;
+		velnachbroy = document.getElementById("i1").value*1;
+		golemina = document.getElementById("i3").value*1;
+		plsp = document.getElementById("i4").value*1;
+		plr = document.getElementById("i5").value*1;
+		for(var i=0;i<velnachbroy;i++){
+			var x = Math.round(Math.random()*350)+25;
+			var y = Math.round(Math.random()*400)-450;
+			vel.add(velQta,x,y,speed,golemina,0,0)
+		}
+		clearInterval(interval);
+		clearInterval(tim);
+		secs=0;
+		vel.resetall(velQta,velnachbroy);
+		player.reset();
+		contin();
+	}
+	function contin(){
+		zasichane()
+		interval = setInterval(gameupdate,20);
+		playing = true;
+	}
+	function restart(){
+		clearInterval(interval);
+		clearInterval(tim);
+		secs=0;
+		vel.resetall(velQta,velnachbroy);
+		player.reset();
+		contin();
+	}
+	function pause(){
+		clearInterval(tim);
+		clearInterval(interval);
+		playing = false;
+	}
+	function gameupdate(){
+		ctx.clearRect(0,0,400,600);
+		vel.drawvel();
+		player.update();
+		vel.update();
+		vel.exitbox();
+		if(!dod[1]&&!dod[3]) player.xs = 0;
+		if(!dod[2]&&!dod[4]) player.ys = 0;
+		vel.hit(velQta);
+		var ran = Math.floor(Math.random()*velnachbroy);
+		if(count==chestota&&velQta[ran].y>50&&velQta[ran].y<500){
+			count = 0;
+			velQta[ran].ate++;
+		}
+		if(count==chestota){
+			count=0;
+		}
+		else count++;
+	}
+	function drawplayer(x,y,r){
+	ctx.beginPath();
+	ctx.arc(x,y,r,0,Math.PI*2)
+	ctx.fillStyle="#ffa149";
+	ctx.fill();
+	ctx.beginPath();
+	ctx.arc(x,y,r*1.1, Math.PI,Math.PI*2);
+	ctx.fillStyle = "#6d3500";
+	ctx.fill();
+	ctx.beginPath();
+	ctx.moveTo(x+r*0.2,y);
+	ctx.lineTo(x+r*0.4,y-r*0.4);
+	ctx.lineTo(x+r*0.6,y);
+	ctx.closePath();
+	ctx.fillStyle = "#ffa149";
+	ctx.fill();
+	ctx.beginPath();
+	ctx.arc(x-r*0.4,y+r*0.2,r*0.15,0,Math.PI*2);
+	ctx.fillStyle = "black";
+	ctx.fill();
+	ctx.beginPath();
+	ctx.arc(x+r*0.4,y+r*0.2,r*0.15,0,Math.PI*2);
+	ctx.fillStyle = "black";
+	ctx.fill();
+	}
+	function meme(){
+		var ran = Math.floor(Math.random()*4);
+		ctx.beginPath();
+		ctx.rect(0, 100, 400, 200);
+		ctx.fillStyle = " #ffbf00";
+		ctx.fill();
+		ctx.fillStyle = "black";
+		ctx.font = "30px Arial";
+		switch(ran){
+			case 0: ctx.fillText("Yikes!", 160, 200); break;
+			case 1: ctx.fillText("Try again?", 130, 200); break;
+			case 2: ctx.fillText("You'll get better.", 100, 200); break;
+			case 3: ctx.fillText("Impossible, right?", 80, 200); break;
+		}
+	}
+	function drawQ(x,y,r,pos,col){
+	if(pos==1) pos = Math.PI/2;
+	if(pos==2) pos = Math.PI/(-2);
+	if(col==0) col = "purple";
+	if(col>0) col = "#ff38c0";
+	ctx.translate(x, y);
+	ctx.rotate(pos);
+	ctx.beginPath();
+	ctx.arc(0 , 0 , r , Math.PI/(-6) , Math.PI/6*7);
+	ctx.fillStyle = col;
+	ctx.fill();
+	ctx.beginPath();
+	ctx.moveTo(0, - r/2);
+	ctx.lineTo(r/3, -r*2);
+	ctx.lineTo(r*6/7,-r/2);
+	ctx.closePath();
+	ctx.fill();
+	ctx.beginPath();
+	ctx.moveTo(0, -r/2);
+	ctx.lineTo(-r/3, -r*2);
+	ctx.lineTo(-r*6/7,-r/2);
+	ctx.closePath();
+	ctx.fill();
+	ctx.rotate(-pos);
+	ctx.translate(-x,-y);
+	}
+	function zasichane(){
+	tim = setInterval(addsec,1000);
+	function addsec(){
+		secs++;
+		document.getElementById("timebox").innerHTML = "Време: " + secs + " сек.";
+	}
+}
+</script>
