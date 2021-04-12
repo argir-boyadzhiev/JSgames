@@ -2,135 +2,153 @@
 <head>
 <title>ColorTabs</title>
 <script>
-var lvl;
-var siz;
-var scor=0;
-var sr;
-var bol=false;
-var pozicii = new Array();
+var boardSize; //the amount of color tabs in a column or a row of the board
+var score = 0; //the amount of color tabs removed from the board
+var hasMarked = false; //true when the is one marked tab
+var markedTab; //the position of the marked tab
 
-function genpos(h){
+//generates array with the positions of each color tab
+function generatePositionArray(size){
 	
-var k = new Array();
-for(var jj=0;jj<(siz)*(siz);jj++){
-	k[jj] = jj+1;
-}
-var r;
-var t=siz*siz;
+	//create ordered array
+	let positionArraySize = size * size;
+	let positionArray = new Array();
 
-for(var p=0;p<(siz*siz);p++)
-{
-	r = Math.floor(Math.random()*t);
-    h[p] = k[r];
-    for(var c =r;c<t;c++)
-    {
-    	k[c]=k[c+1];
-    }
-    t--;
-}
-}
+	for(let i = 0; i < positionArraySize; i++){
+		positionArray[i] = i + 1;
+	}
 
-
-
-
-var cvetove = new Array(); //za cvetove
-function gencvqt(l)
-{
 	
-	for(var i=0;i<(siz*siz/2*3);i++)
+
+	//shuffle array
+	for(let i = 0; i < positionArraySize; i++)
 	{
-		l[i] = Math.floor(Math.random()*256);
+		let randomPosition = Math.floor(Math.random() * positionArraySize);
+
+		//this magic trick swaps the values
+	    [positionArray[i], positionArray[randomPosition]] = [positionArray[randomPosition], positionArray[i]];
+	}
+
+	return positionArray;
+}
+
+
+// generates array with color values for the tabs
+function generateColorArray(size)
+{
+	let colorArray = new Array();
+	let sizeOfColorArray = size * size / 2 * 3;
+	/*
+	to get the size of the collor array
+	we multiply size by itself to get the count of the color tabs
+	then we divide them by 2 because there are 2 of each color
+	then multiply them by 3 because each color needs 3 values
+	*/
+
+	for(var i = 0; i < sizeOfColorArray; i++)
+	{
+		colorArray[i] = Math.floor(Math.random()*256);
+	}
+
+	return colorArray;
+}
+
+
+function initiateGame(){
+
+	let level = document.getElementById("levelInput").value;
+	boardSize = level * 2;
+
+	generateBoard(boardSize, generateColorArray(boardSize), generatePositionArray(boardSize));
+}
+
+/*
+in the generated html table the tabs with equal colors are couples
+which have an even and an odd number as their positions and
+the even is allways smaller than the odd 
+*/
+
+function generateBoard(boardSize, colorArray, positionArray){
+
+	//creates an html table
+	let gameWindow = document.getElementById("gameWindow");
+	let htmlBoard = "<table>";
+
+	//sets positions
+	let positionCounter = 1;
+	for(let i = 1; i <= boardSize; i++)
+	{
+		htmlBoard = htmlBoard + '<tr>';
+		for(let j = 1; j <= boardSize; j++)
+		{
+			htmlBoard = htmlBoard + '<td onclick="removeCouple(' + positionArray[positionCounter-1] + ')" id="' 
+			+ positionArray[positionCounter-1] + '"></td>';
+			positionCounter++;
+		}
+		htmlBoard = htmlBoard + '</tr>';
+	}
+	htmlBoard += '</table>';
+	gameWindow.innerHTML = htmlBoard;
+
+	//sets colors
+	let numberOfTabs = boardSize*boardSize/2;
+	for(let i = 1; i <= numberOfTabs; i++)
+	{
+		document.getElementById(i * 2).style = "border: 3px groove black; background-color: rgb(" + colorArray[(i - 1) * 3] + "," 
+		+ colorArray[(i - 1) * 3 + 1] + "," + colorArray[(i - 1) * 3 + 2] + ")";
+		document.getElementById(i * 2 - 1).style = "border: 3px groove black; background-color: rgb(" + colorArray[(i - 1) * 3] + "," 
+		+ colorArray[(i - 1) * 3 + 1] + "," + colorArray[(i - 1) * 3 + 2] + ")";
 	}
 }
 
-
-
-function beg(){
-lvl = document.getElementById("dul").value;
-siz = lvl*2;
-var BIG = document.getElementById("BIG");
-var inputcode = "<table>";
-var n = 1;
-var ac;
-var bc;
-var cc;
-gencvqt(cvetove);
-genpos(pozicii);
-
-for(var i=1;i<=siz;i++)
-{
-	inputcode = inputcode + '<tr>';
-	for(var j=1;j<=siz;j++)
-	{
-		inputcode = inputcode + '<td onclick="iztr(' + pozicii[n-1] + ')" id="' + pozicii[n-1] + '"></td>';
-		n++;
-	}
-	inputcode = inputcode + '</tr>';
-}
-inputcode += '</table>';
-BIG.innerHTML = inputcode;
-
-	
-	for(var ll=1;ll<(siz*siz/2+1);ll++)
-	{
-		document.getElementById(ll*2).style = "border: 3px groove black; background-color: rgb("+cvetove[(ll-1)*3]+","+cvetove[(ll-1)*3+1]+","+cvetove[(ll-1)*3+2]+")";
-		document.getElementById(ll*2-1).style = "border: 3px groove black; background-color: rgb("+cvetove[(ll-1)*3]+","+cvetove[(ll-1)*3+1]+","+cvetove[(ll-1)*3+2]+")";
-	}
-	
-}
-
-
-
-
-function iztr(n){
-	if(bol == false){
-		document.getElementById(n).style.border = "3px groove white";
-		sr = n;
-		bol = true;
+//removes properly linked couple of tabs with equal colors
+function removeCouple(tabPositon){
+	if(!hasMarked){
+		//marks the tab at 'tabPosition'
+		document.getElementById(tabPositon).style.border = "3px groove white";
+		markedTab = tabPositon;
+		hasMarked = true;
 	}
 	else{
-		if(((sr%2)==0&&sr==(n+1))||((sr%2)!=0&&sr==(n-1))){
-			document.getElementById(n).style.opacity = "0";
-			document.getElementById(sr).style.opacity = "0";
-			scor++;
-			if(scor == (siz*siz/2)){
-			fin();
+
+		if(((markedTab % 2) == 0 && markedTab == (tabPositon + 1)) || ((markedTab % 2) != 0 && markedTab == (tabPositon - 1))){
+			document.getElementById(tabPositon).style.opacity = "0";
+			document.getElementById(markedTab).style.opacity = "0";
+			score++;
+			if(score == (boardSize*boardSize/2)){
+			endGame();
 			}
 		}
 		else{
-			document.getElementById(sr).style.border = "3px groove black";
+			document.getElementById(markedTab).style.border = "3px groove black";
 		}
-		bol = false;
+		hasMarked = false;
 	}
-	
-	
 }
 
-function fin()
+function endGame()
 {
-	document.getElementById("BIG").innerHTML = 'YOU WIN<br><img src="https://thumbs.gfycat.com/OccasionalImpossibleGalapagosmockingbird-max-1mb.gif"/>';
+	document.getElementById("gameWindow").innerHTML = 
+	'YOU WIN<br><img src="https://thumbs.gfycat.com/OccasionalImpossibleGalapagosmockingbird-max-1mb.gif"/>';
 }
 
 </script>
 <style>
 td{
-
-	height: 50px; width: 50px;
-	
+	height: 50px; width: 50px;	
 }
 td:hover { 
     outline-color: white;
-	outline-style: groove;
-	
+	outline-style: groove;	
 }
 </style>
 </head>
 <body>
 <center>
 
-<div id="BIG"  style="height: 100%; width: 100%; background-color: lightblue">
-Lvl:<input id="dul" type="number" value="2"><br>
-<button onclick="beg()">START</button>
+<div id="gameWindow"  style="height: 100%; width: 100%; background-color: lightblue">
+Lvl:<input id="levelInput" type="number" value="2"><br>
+<button onclick="initiateGame()">START</button>
 </div>
 
 
